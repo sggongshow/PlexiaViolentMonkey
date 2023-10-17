@@ -5,11 +5,12 @@
 // @include     *app.plexia.ca/emrshoulihan/
 // @require     https://code.jquery.com/jquery-3.6.0.js
 // @grant       GM_addStyle
-// @version 	  23.10.16.1
+// @version 	  23.10.17.1
 // ==/UserScript==
 
 //changelog: Completed functional
 //23.10.16.0 Complited ability to search for patients.
+//23.10.17.1 Changed so that the script box shows up when the search option is there. 
 
 var GlobalPHNArray = []
 
@@ -114,12 +115,16 @@ function checkIfScriptBoxMissing() {
 
   var element = iframeSidebarContent.document.querySelector('[name = "ScriptBoxPHNList"]');
   if (element) {
-    // Element found, do something with it
+    // Element found, don't neek to make new box
     setTimeout(checkIfScriptBoxMissing, 5000)
     //clearInterval(checkIntervalId); // Stop checking
   } else {
-    // Element not found, keep checking
-    createTextBox()
+    // Element not found, Make new box, assuming on the right sidebarArray
+    var searchBarGo = iframeSidebarContent.document.querySelector('input[id ="divGo"]')
+    if (searchBarGo !=null){
+      console.log("searchbar found, correct sidebar")
+      createTextBox()
+    }
     setTimeout(checkIfScriptBoxMissing, 5000); // Check again after 1 second
 
   }
@@ -131,7 +136,7 @@ async function createTextBox(iframeSidebar){
   const PlexiaMainFrameContent = PlexiaMainFrame.contentWindow;
   var iframeSidebar = PlexiaMainFrameContent.document.querySelector('iframe[id = "sideframe"]')
   var iframeSidebarContent = iframeSidebar.contentWindow;
-  //create user input box for script use in side bar
+  //create user input box for script use in side bar - IF IT IS THE CORRECT SIDEBAR
   //--First need to get the form to append topFrame
   var sidebarForm = iframeSidebarContent.document.querySelector('form[id = "Form1"]')
   //--Then create the textbox and append to sidebar
@@ -163,7 +168,7 @@ async function createTextBox(iframeSidebar){
 
 function refreshScriptTextBox(scriptTextbox){
   console.log("refreshbox")
-  console.log(GlobalPHNArray)
+  //console.log(GlobalPHNArray)
 
   if (GlobalPHNArray.length==0){
     //TEMPORARY TESTING DATA
