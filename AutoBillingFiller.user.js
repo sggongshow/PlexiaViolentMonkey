@@ -5,11 +5,11 @@
 // @include     *mspbilling/Dialog.aspx?*pagetitle=Add/Modify*
 // @require     https://code.jquery.com/jquery-3.6.0.js
 // @grant       GM_addStyle
-// @version 	  23.10.15.0
+// @version 	  23.10.17.0
 // ==/UserScript==
 
 //changelog: Completed functional 
-
+//23.10.17.0 removed the temp testing data
 
 window.addEventListener('load', function() {
 
@@ -32,7 +32,7 @@ function main(){
   scriptTextbox.name = "scriptTextBox_name"
   aspnetForm.insertBefore(scriptTextbox, aspnetForm.firstChild)
 
-  scriptTextbox.value ="10/10/2023\n4010\n618\n37250\nI\n22:00\n23:00\n01210"
+  //scriptTextbox.value ="10/10/2023\n4010\n618\n37250\nI\n22:00\n23:00\n01210"
 
 
   var runScriptButton = iframeContent.document.createElement('button');
