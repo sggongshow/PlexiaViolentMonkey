@@ -1,15 +1,16 @@
 // ==UserScript==
-// @name        Plexia MSP Billing Modifications
+// @name        Plexia MSP Billing Auto Filler
 // @namespace   GongPlexia
 // @description Modifications for billing code
 // @include     *mspbilling/Dialog.aspx?*pagetitle=Add/Modify*
 // @require     https://code.jquery.com/jquery-3.6.0.js
 // @grant       GM_addStyle
-// @version 	  23.10.17.0
+// @version 	  23.10.17.2
 // ==/UserScript==
 
-//changelog: Completed functional 
+//changelog: Completed functional
 //23.10.17.0 removed the temp testing data
+//23.10.17.2 stopped referral doctor autofill if array empty
 
 window.addEventListener('load', function() {
 
@@ -20,6 +21,31 @@ window.addEventListener('load', function() {
 
 function main(){
   console.log("helloworld")
+  createTextBox()
+  var checkIntervalId = setInterval(checkIfScriptBoxMissing, 5000);
+
+}
+
+function checkIfScriptBoxMissing() {
+  //console.log("checking if missing")
+  const iframe = document.querySelector('iframe[id = "ctl00_innerIframe"]')
+  const iframeContent = iframe.contentWindow;
+
+  var element = iframeContent.document.querySelector('[name = "scriptTextBox_name"]');
+  if (element) {
+    // Element found, do something with it
+    setTimeout(checkIfScriptBoxMissing, 5000)
+    //clearInterval(checkIntervalId); // Stop checking
+  } else {
+    // Element not found, keep checking
+    createTextBox()
+    setTimeout(checkIfScriptBoxMissing, 5000); // Check again after 1 second
+
+  }
+}
+
+
+async function createTextBox(){
   const iframe = document.querySelector('iframe[id = "ctl00_innerIframe"]')
   const iframeContent = iframe.contentWindow;
 
@@ -45,6 +71,7 @@ function main(){
   window.resizeTo(window.innerHeight, 900);
 
   runScriptButton.addEventListener("click", runScriptFunction);
+
 
 }
 
@@ -88,9 +115,14 @@ async function runScriptFunction() {
     icdBox.value = rawdataArray[2]
     icdBox.dispatchEvent(eventChange)
     await delay(500)
-    refbyBox.value = rawdataArray[3]
-    refbyBox.dispatchEvent(eventChange)
-    await delay(100)
+
+    //do not overwrite ref if no ref to enter. it will then use default in EMR if available.
+    if (rawdataArray[3].length>2){
+      refbyBox.value = rawdataArray[3]
+      refbyBox.dispatchEvent(eventChange)
+      await delay(100)
+    }
+
     serviceLocation.value = rawdataArray[4]
 
     //check need for surcharge
