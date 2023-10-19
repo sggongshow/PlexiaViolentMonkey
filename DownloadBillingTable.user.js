@@ -5,10 +5,11 @@
 // @include     *app.plexia.ca/emrshoulihan/
 // @require     https://code.jquery.com/jquery-3.6.0.js
 // @grant       GM_addStyle
-// @version 	  23.10.17.1
+// @version 	  23.10.18.1
 // ==/UserScript==
 
 //changelog: 23.10.17.1: first creation date
+//23.10.18.1: catch in case aspenNetForm is not ready yet under checkIfRightPage()
 
 var GlobalPlexiaMainFrame
 var GlobalPlexiaMainFrameContent
@@ -32,7 +33,6 @@ async function main(){
   GlobalIframeMainContent //placeholder
 
 
-
   checkIfRightPage()
 
 
@@ -47,8 +47,13 @@ async function checkIfRightPage(){
   }
 
   GlobalIframeMainContent = GlobalIframeMain.contentWindow;
-
+  await delay(50)
   var aspenNetForm = GlobalIframeMainContent.document.querySelector('form[id = "aspnetForm"]')
+
+  while (aspenNetForm == null){
+    aspenNetForm = GlobalIframeMainContent.document.querySelector('form[id = "aspnetForm"]')
+    await delay(100)
+  }
 
   var aspenNetAction = aspenNetForm.action
 
