@@ -5,12 +5,13 @@
 // @include     *app.plexia.ca/emrshoulihan/
 // @require     https://code.jquery.com/jquery-3.6.0.js
 // @grant       GM_addStyle
-// @version 	  23.10.17.1
+// @version 	  23.10.18.1
 // ==/UserScript==
 
 //changelog: Completed functional
 //23.10.16.0 Complited ability to search for patients.
-//23.10.17.1 Changed so that the script box shows up when the search option is there. 
+//23.10.17.1 Changed so that the script box shows up when the search option is there.
+//23.10.18.1 added catch to checkIfScriptBoxMissing() in case sidebarframe =null
 
 var GlobalPHNArray = []
 
@@ -113,6 +114,11 @@ function checkIfScriptBoxMissing() {
   var iframeSidebar = PlexiaMainFrameContent.document.querySelector('iframe[id = "sideframe"]')
   var iframeSidebarContent = iframeSidebar.contentWindow;
 
+  if (iframeSidebar == null){
+    setTimeout(checkIfScriptBoxMissing, 5000)
+    return
+  }
+
   var element = iframeSidebarContent.document.querySelector('[name = "ScriptBoxPHNList"]');
   if (element) {
     // Element found, don't neek to make new box
@@ -195,8 +201,8 @@ function refreshScriptTextBox(scriptTextbox){
       return self.indexOf(element) === index;
     });
 
-    console.log(GlobalPHNArray)
-    console.log(ArrayValConvert)
+    //console.log(GlobalPHNArray)
+    //console.log(ArrayValConvert)
     var lastIndex = ArrayValConvert.lastIndexOf("\t");
     ArrayValConvert = ArrayValConvert.slice(0, lastIndex)
     //console.log(ArrayValConvert)
@@ -205,6 +211,7 @@ function refreshScriptTextBox(scriptTextbox){
   }
 }
 
+//wait for sidebar to show up before doing anything else
 async function CheckSidebarIframe(iframeContent){
   console.log("checkSidebar")
   //waitfor right page to show
